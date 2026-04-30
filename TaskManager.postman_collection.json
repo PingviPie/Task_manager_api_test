@@ -1,0 +1,488 @@
+{
+  "info": {
+    "name": "Task Manager — QA Practice",
+    "description": "Учебная коллекция для практики REST API. Покрывает GET, POST, PUT, PATCH, DELETE запросы к json-server.\n\nBase URL: http://localhost:3000\n\nЗапускай json-server перед использованием:\nnpx json-server --watch db.json --port 3000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "task_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "📋 GET",
+      "item": [
+        {
+          "name": "GET — Все задачи",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks",
+              "host": ["{{base_url}}"],
+              "path": ["tasks"]
+            },
+            "description": "Получить список всех задач.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- Body: массив объектов [ {...}, {...} ]\n- Должно быть 4 задачи по умолчанию"
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Задача по ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}"]
+            },
+            "description": "Получить одну задачу по ID.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- Body: один объект задачи\n\n💡 Измени переменную task_id в коллекции или прямо в URL"
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Задача не найдена (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks/9999",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "9999"]
+            },
+            "description": "Запрос несуществующей задачи.\n\n✅ Ожидаемый результат:\n- Status: 404 Not Found\n- Body: {}\n\n🎯 Учебный момент: важно проверять не только позитивные сценарии"
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Фильтр по статусу",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks?status=todo",
+              "host": ["{{base_url}}"],
+              "path": ["tasks"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "todo",
+                  "description": "Попробуй: todo, in-progress, done"
+                }
+              ]
+            },
+            "description": "Фильтрация задач по полю status через query-параметр.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- Body: только задачи с status=todo\n\n💡 json-server поддерживает фильтрацию по любому полю: ?priority=high, ?assignee=Аня"
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Фильтр по приоритету",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks?priority=high",
+              "host": ["{{base_url}}"],
+              "path": ["tasks"],
+              "query": [
+                {
+                  "key": "priority",
+                  "value": "high",
+                  "description": "Попробуй: low, medium, high"
+                }
+              ]
+            },
+            "description": "Фильтрация задач по приоритету.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- Body: только задачи с priority=high"
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Сортировка по ID (desc)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks?_sort=id&_order=desc",
+              "host": ["{{base_url}}"],
+              "path": ["tasks"],
+              "query": [
+                { "key": "_sort", "value": "id" },
+                { "key": "_order", "value": "desc" }
+              ]
+            },
+            "description": "Сортировка задач по ID в порядке убывания.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- Первой идёт задача с наибольшим id\n\n💡 json-server поддерживает: _sort, _order, _limit, _page"
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Пагинация (страница 1, по 2 шт)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks?_page=1&_limit=2",
+              "host": ["{{base_url}}"],
+              "path": ["tasks"],
+              "query": [
+                { "key": "_page", "value": "1" },
+                { "key": "_limit", "value": "2" }
+              ]
+            },
+            "description": "Пагинация — получить первые 2 задачи.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- Body: массив из 2 задач\n- Header X-Total-Count покажет общее количество записей\n\n💡 Попробуй _page=2 чтобы получить следующие 2"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "➕ POST",
+      "item": [
+        {
+          "name": "POST — Создать задачу",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Моя первая задача через Postman\",\n  \"description\": \"Создана через POST запрос\",\n  \"status\": \"todo\",\n  \"priority\": \"high\",\n  \"assignee\": \"Твоё имя\",\n  \"createdAt\": \"2025-01-15T10:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks",
+              "host": ["{{base_url}}"],
+              "path": ["tasks"]
+            },
+            "description": "Создать новую задачу.\n\n✅ Ожидаемый результат:\n- Status: 201 Created\n- Body: объект задачи с новым id (json-server генерирует автоматически)\n- Задача появится на фронте\n\n⚠️ Не забудь поменять 'Твоё имя' в поле assignee"
+          },
+          "response": []
+        },
+        {
+          "name": "POST — Создать без обязательных полей",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks",
+              "host": ["{{base_url}}"],
+              "path": ["tasks"]
+            },
+            "description": "Попытка создать задачу с пустым body.\n\n🤔 Что вернёт json-server?\n- json-server не валидирует поля, вернёт 201 с пустым объектом\n- Это особенность инструмента — в реальных API обычно 400 Bad Request\n\n🎯 Учебный момент: понять разницу между поведением mock-сервера и боевого API"
+          },
+          "response": []
+        },
+        {
+          "name": "POST — Создать задачу (статус done)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Уже выполненная задача\",\n  \"description\": \"Создана сразу со статусом done\",\n  \"status\": \"done\",\n  \"priority\": \"low\",\n  \"assignee\": \"Коля\",\n  \"createdAt\": \"2025-01-15T11:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks",
+              "host": ["{{base_url}}"],
+              "path": ["tasks"]
+            },
+            "description": "Создать задачу сразу со статусом done.\n\n✅ Ожидаемый результат:\n- Status: 201 Created\n- Карточка на фронте появится в зелёном стиле (done)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🔁 PUT",
+      "item": [
+        {
+          "name": "PUT — Полная замена задачи",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Задача полностью заменена через PUT\",\n  \"description\": \"Все поля переданы заново\",\n  \"status\": \"in-progress\",\n  \"priority\": \"medium\",\n  \"assignee\": \"Петя\",\n  \"createdAt\": \"2025-01-15T12:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}"]
+            },
+            "description": "Полная замена задачи — PUT заменяет весь объект целиком.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- Body: обновлённый объект\n- Все поля заменены на новые значения\n\n⚠️ Важно: если не передать какое-то поле — оно УДАЛИТСЯ из объекта!\nПопробуй убрать поле assignee и проверь результат"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT — Замена без поля assignee (потеря данных)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"PUT без поля assignee\",\n  \"description\": \"Поле assignee намеренно пропущено\",\n  \"status\": \"todo\",\n  \"priority\": \"low\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks/2",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "2"]
+            },
+            "description": "Демонстрация опасности PUT — поле assignee пропущено намеренно.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- В ответе НЕТ поля assignee — оно удалено!\n\n🎯 Учебный момент: PUT vs PATCH — ключевое отличие.\nPUT = перезаписать всё\nPATCH = изменить только указанное"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "✏️ PATCH",
+      "item": [
+        {
+          "name": "PATCH — Сменить статус на in-progress",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in-progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}"]
+            },
+            "description": "Частичное обновление — только статус задачи.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- Только поле status изменилось\n- Все остальные поля сохранились без изменений\n\n💡 Это главное преимущество PATCH перед PUT"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH — Сменить статус на done",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"done\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}"]
+            },
+            "description": "Завершить задачу — поменять статус на done.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- status: 'done'\n- На фронте карточка станет зелёной"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH — Сменить приоритет",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"priority\": \"high\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}"]
+            },
+            "description": "Изменить только приоритет задачи.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- priority: 'high'\n- На фронте карточка получит красную полосу сверху"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH — Переназначить исполнителя",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignee\": \"Новый исполнитель\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}"]
+            },
+            "description": "Переназначить задачу другому исполнителю.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- Только поле assignee изменилось"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH — Несуществующая задача (404)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"done\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tasks/9999",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "9999"]
+            },
+            "description": "Попытка обновить несуществующую задачу.\n\n✅ Ожидаемый результат:\n- Status: 404 Not Found\n\n🎯 Учебный момент: всегда проверяй негативные сценарии"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🗑️ DELETE",
+      "item": [
+        {
+          "name": "DELETE — Удалить задачу по ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}"]
+            },
+            "description": "Удалить задачу по ID.\n\n✅ Ожидаемый результат:\n- Status: 200 OK\n- Body: {} (пустой объект)\n- Карточка исчезнет с фронта\n\n💡 Поменяй task_id в переменных коллекции перед запуском"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE — Удалить несуществующую (404)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks/9999",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "9999"]
+            },
+            "description": "Попытка удалить несуществующую задачу.\n\n✅ Ожидаемый результат:\n- Status: 404 Not Found\n\n🎯 Учебный момент: удаление несуществующего ресурса — частый кейс в тест-планах"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE — Проверка что задача удалена",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks/{{task_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "{{task_id}}"]
+            },
+            "description": "GET после DELETE — убедиться что задача действительно удалена.\n\n✅ Ожидаемый результат:\n- Status: 404 Not Found\n\n🎯 Учебный момент: после деструктивной операции всегда делай проверочный запрос"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Написать тест-кейсы для авторизации",
+      "description": "Покрыть все сценарии входа и выхода",
+      "status": "todo",
+      "priority": "high",
+      "assignee": "Аня",
+      "createdAt": "2025-01-10T10:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "title": "Регрессия после релиза 2.1",
+      "description": "Пройти smoke-тесты по всем модулям",
+      "status": "done",
+      "priority": "high",
+      "assignee": "Аня",
+      "createdAt": "2025-01-12T09:00:00.000Z"
+    },
+    {
+      "id": "4",
+      "title": "Автоматизировать тест корзины",
+      "description": "Selenium / Playwright скрипт",
+      "status": "todo",
+      "priority": "low",
+      "assignee": "Коля",
+      "createdAt": "2025-01-13T15:00:00.000Z"
+    },
+    {
+      "title": "Моя первая задача через Postman",
+      "description": "Создана через POST запрос",
+      "status": "todo",
+      "priority": "high",
+      "assignee": "Твоё имя",
+      "createdAt": "2025-01-15T10:00:00.000Z",
+      "id": "EHd-dI1D0do"
+    },
+    {
+      "title": "Задача полностью заменена через PUT",
+      "description": "Все поля переданы заново",
+      "status": "in-progress",
+      "priority": "medium",
+      "assignee": "Петя",
+      "createdAt": "2025-01-15T12:00:00.000Z",
+      "id": "hYmdE71C99E"
+    },
+    {
+      "title": "aaaa",
+      "description": "asdsa",
+      "status": "todo",
+      "priority": "low",
+      "assignee": "sobaka",
+      "createdAt": "2026-04-13T19:17:18.687Z",
+      "id": "kkV2FeE7o0A"
+    },
+    {
+      "title": "aaaaa",
+      "description": "bbbb",
+      "status": "todo",
+      "priority": "low",
+      "assignee": "ccccc",
+      "createdAt": "2026-04-13T19:17:38.685Z",
+      "id": "MBK7cXWxyM4"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
