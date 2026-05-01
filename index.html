@@ -807,49 +807,55 @@
       return;
     }
 
-    const btn = document.getElementById('modal-submit-btn');
-    btn.disabled = true;
-    btn.textContent = '...';
+const btn = document.getElementById('modal-submit-btn');
+btn.disabled = true;
+btn.textContent = '...';
 
-    const payload = {
-      title,
-      description: document.getElementById('f-description').value.trim(),
-      status:      document.getElementById('f-status').value,
-      priority:    document.getElementById('f-priority').value,
-      assignee:    document.getElementById('f-assignee').value.trim(),
-      createdAt:   new Date().toISOString()
-    };
+const isEditing = editingId !== null;
+const originalTask = isEditing ? allTasks.find(t => t.id === editingId) : null;
 
-    try {
-      if (editingId === null) {
-        // ── POST ──────────────────────────────────
-        const res = await fetch(API, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const created = await res.json();
-        setLog(`✅ POST /tasks → 201 Created  |  новый id: ${created.id}`);
-      } else {
-        // ── PUT ───────────────────────────────────
-        const res = await fetch(`${API}/${editingId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        await res.json();
-        setLog(`✏️ PUT /tasks/${editingId} → 200 OK  |  задача обновлена`);
-      }
+const payload = {
+  title,
+  description: document.getElementById('f-description').value.trim(),
+  status:      document.getElementById('f-status').value,
+  priority:    document.getElementById('f-priority').value,
+  assignee:    document.getElementById('f-assignee').value.trim(),
+  createdAt: isEditing
+    ? (originalTask?.createdAt ?? new Date().toISOString())
+    : new Date().toISOString()
+};
 
-      closeModal();
-      await loadTasks();
-      syncSnapshot();
-    } catch {
-      setLog('❌ Ошибка запроса — проверь что json-server запущен');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = editingId === null ? 'Создать' : 'Сохранить';
-    }
+try {
+  if (!isEditing) {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(`POST failed: ${res.status}`);
+    const created = await res.json();
+    setLog(`✅ POST /tasks → 201 Created  |  новый id: ${created.id}`);
+  } else {
+    const res = await fetch(`${API}/${editingId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(`PUT failed: ${res.status}`);
+    await res.json();
+    setLog(`✏️ PUT /tasks/${editingId} → 200 OK  |  задача обновлена`);
+  }
+
+  closeModal();
+  editingId = null;
+  await loadTasks();
+  syncSnapshot();
+} catch {
+  setLog('❌ Ошибка запроса — проверь что json-server запущен');
+} finally {
+  btn.disabled = false;
+  btn.textContent = isEditing ? 'Сохранить' : 'Создать';
+}
   }
 
   // ─── DELETE ──────────────────────────────────────
