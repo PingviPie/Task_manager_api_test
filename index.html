@@ -873,21 +873,24 @@ try {
     deletingId = null;
   }
 
-  async function confirmDelete() {
-    if (!deletingId) return;
-    const id = deletingId;
-    closeConfirm();
-    try {
-      const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        setLog(`🗑️ DELETE /tasks/${id} → 200 OK  |  задача удалена`);
-        await loadTasks();
-        syncSnapshot();
-      }
-    } catch {
-      setLog('❌ Ошибка при удалении');
+async function confirmDelete() {
+  if (!deletingId) return;
+  const id = deletingId;
+  closeConfirm();
+  try {
+    const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      setLog(`🗑️ DELETE /tasks/${id} → 200 OK  |  задача удалена`);
+      // Удаляем задачу локально из массива — без запроса к серверу
+      allTasks = allTasks.filter(t => t.id != id);
+      updateCounts();
+      renderTasks();
+      syncSnapshot();
     }
+  } catch {
+    setLog('❌ Ошибка при удалении');
   }
+}
 
   // ─── AUTO-REFRESH (Postman events) ───────────────
 
