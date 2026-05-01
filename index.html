@@ -715,7 +715,7 @@
     }
 
     grid.innerHTML = list.map((t, i) => `
-      <div class="task-card priority-${t.priority || 'low'}" style="animation-delay:${i*0.05}s">
+      <div class="task-card priority-${t.priority || 'low'}" style="animation-delay:${i*0.05}s" data-id="${t.id}">
 
         <div class="card-actions">
           <button class="card-btn"  title="Редактировать — PUT"
@@ -883,9 +883,10 @@ async function confirmDelete() {
       setLog(`🗑️ DELETE /tasks/${id} → 200 OK  |  задача удалена`);
       // Удаляем задачу локально из массива — без запроса к серверу
       allTasks = allTasks.filter(t => t.id != id);
-      updateCounts();
-      renderTasks();
-      syncSnapshot();
+updateCounts();
+syncSnapshot();
+const card = document.querySelector(`[data-id="${id}"]`);
+if (card) card.remove();
     }
   } catch {
     setLog('❌ Ошибка при удалении');
