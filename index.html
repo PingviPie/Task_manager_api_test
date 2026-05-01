@@ -655,7 +655,7 @@
     <div class="confirm-text" id="confirm-text">Это действие нельзя отменить.</div>
     <div class="confirm-btns">
       <button class="btn btn-ghost btn-cancel" onclick="closeConfirm()">Отмена</button>
-      <button class="btn btn-danger" onclick="confirmDelete()">Удалить</button>
+      <button type="button" class="btn btn-danger"  onclick="confirmDelete()">Удалить</button>
     </div>
   </div>
 </div>
@@ -883,10 +883,10 @@ async function confirmDelete() {
       setLog(`🗑️ DELETE /tasks/${id} → 200 OK  |  задача удалена`);
       // Удаляем задачу локально из массива — без запроса к серверу
       allTasks = allTasks.filter(t => t.id != id);
-updateCounts();
-syncSnapshot();
-const card = document.querySelector(`[data-id="${id}"]`);
-if (card) card.remove();
+      updateCounts();
+      syncSnapshot();
+      const card = document.querySelector(`[data-id="${id}"]`);
+      if (card) card.remove();
     }
   } catch {
     setLog('❌ Ошибка при удалении');
